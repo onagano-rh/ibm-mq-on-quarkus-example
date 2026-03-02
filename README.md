@@ -54,7 +54,16 @@ $ curl http://localhost:8080/hello/send2
 # 即座に自動受信されQuarkusの標準出力に同じメッセージが出力される。
 ```
 
+その他、RESTクライアントの例として /hello/call-rest を呼び出すと
+（自分のサーバーの） /hello を呼び出すようになっている。
+
+```
+$ curl http://localhost:8080/hello/call-rest
+Hello from Quarkus REST
+```
+
 ## 参考リンク
 
 - https://github.com/gastaldi/quarkus-ibm-mq
 - https://github.com/ibm-messaging/mq-container
+- https://ja.quarkus.io/version/3.20/guides/rest-client

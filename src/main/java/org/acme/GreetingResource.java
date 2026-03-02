@@ -1,5 +1,7 @@
 package org.acme;
 
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.jms.ConnectionFactory;
@@ -33,6 +35,9 @@ public class GreetingResource {
 
     @Inject
     ObjectMapper objectMapper;
+
+    @RestClient
+    TestRestClient testRestClient;
 
     @GET
     @Path("/send")
@@ -80,6 +85,12 @@ public class GreetingResource {
         }
 
         return jsonString;
+    }
+
+    @GET
+    @Path("/call-rest")
+    public String callRest() {
+        return testRestClient.callHello();
     }
 
 }
