@@ -2,20 +2,7 @@
 
 ## 使い方
 
-Quarkus用のIBM MQエクステンションは存在するが公開はされていないので、
-自分でビルドしローカルのリポジトリにインストールしておく。
-
-```
-git clone https://github.com/onagano-rh/quarkus-ibm-mq
-cd quarkus-ibm-mq
-git checkout 3.20.5
-mvn clean install -Dmaven.test.skip
-```
-
-これにより同じマシン上であれば quarkus-ibm-mq の拡張を使えるようになる。
-Quarkus 3.20.5で動作確認したブランチがあるのでそれを使うこと。
-
-使い方を示すための簡単なサンプルプロジェクトを用意してある。
+使い方を示すための簡単なサンプルプロジェクトを用意した。
 まずテスト用のMQサーバーをDockerもしくはPodmanで起動しておく。
 
 ```
@@ -35,6 +22,8 @@ cd ibm-mq-on-quarkus-example
 ./mvnw quarkus:dev
 ```
 
+## 同期的な送受信
+
 /hello/send のエンドポイントで DEV.QUEUE.1 に特定のJSONメッセージを送信する。
 それを /hello/receive のエンドポイントで受信するように [GreetingResource.java](src/main/java/org/acme/GreetingResource.java) でコーディングしている。
 
@@ -45,14 +34,39 @@ $ curl http://localhost:8080/hello/receive
 {"message":"Sent to queue.1","timestamp":1771218164556}
 ```
 
+## 非同期的な受信
+
 /hello/send2 のエンドポイントで DEV.QUEUE.2 に特定のJSONメッセージを送信する。
-こちらはMDBの代わりとして使える [MDBAlternative.java](src/main/java/org/acme/MDBAlternative.java) で自動的に受信される。
+こちらはMDBの代わりとして使える [MyMessageListener.java](src/main/java/org/acme/jmslistener/MyMessageListener.java) で自動的に受信される。
 
 ```
 $ curl http://localhost:8080/hello/send2
 {"message":"Sent to queue.2","timestamp":1771218543781} 
 # 即座に自動受信されQuarkusの標準出力に同じメッセージが出力される。
 ```
+
+### メッセージリスナーの停止と再開
+
+MDB相等のメッセージリスナーを安全に停止・再開するためのテスト用のエンドポイント /hello/start-listener と /hello/stop-listener を用意している。
+
+```
+# メッセージリスナーの停止
+$ curl http://localhost:8080/hello/stop-listener
+Listener stopped
+
+# 停止中にいくつかメッセージを溜めておく
+$ curl http://localhost:8080/hello/send2
+$ curl http://localhost:8080/hello/send2
+
+# メッセージリスナーの再開
+$ curl http://localhost:8080/hello/start-listener
+Listener started
+# Quarkusのログで受信再開を確認できる
+```
+
+こうしたメッセージリスナーの管理は [MessageListenerManager.java](src/main/java/org/acme/jmslistener/MessageListenerManager.java) で行っている。
+
+## RESTクライアントの例
 
 その他、RESTクライアントの例として /hello/call-rest を呼び出すと
 （自分のサーバーの） /hello を呼び出すようになっている。
@@ -64,6 +78,5 @@ Hello from Quarkus REST
 
 ## 参考リンク
 
-- https://github.com/gastaldi/quarkus-ibm-mq
 - https://github.com/ibm-messaging/mq-container
 - https://ja.quarkus.io/version/3.20/guides/rest-client

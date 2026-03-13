@@ -13,7 +13,7 @@
         <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
         <quarkus.platform.group-id>com.redhat.quarkus.platform</quarkus.platform.group-id>
         <quarkus.platform.version>3.20.5.redhat-00002</quarkus.platform.version>
-        <quarkus.ibm-mq.version>3.20.5</quarkus.ibm-mq.version>
+        <ibm-mq.version>9.4.5.0</ibm-mq.version>
         <skipITs>true</skipITs>
         <surefire-plugin.version>3.5.2</surefire-plugin.version>
     </properties>
@@ -44,9 +44,9 @@
             <artifactId>quarkus-rest</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.quarkiverse.ibm.mq</groupId>
-            <artifactId>quarkus-ibm-mq</artifactId>
-            <version>${quarkus.ibm-mq.version}</version>
+            <groupId>com.ibm.mq</groupId>
+            <artifactId>com.ibm.mq.jakarta.client</artifactId>
+            <version>${ibm-mq.version}</version>
         </dependency>
         <dependency>
             <groupId>io.quarkus</groupId>

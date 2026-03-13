@@ -1,5 +1,6 @@
 package org.acme;
 
+import org.acme.jmslistener.MessageListenerManager;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -35,6 +36,9 @@ public class GreetingResource {
 
     @Inject
     ObjectMapper objectMapper;
+
+    @Inject
+    MessageListenerManager messageListenerManager;
 
     @RestClient
     TestRestClient testRestClient;
@@ -85,6 +89,20 @@ public class GreetingResource {
         }
 
         return jsonString;
+    }
+
+    @GET
+    @Path("/start-listener")
+    public String startListener() {
+        messageListenerManager.start();
+        return "Listener started";
+    }
+
+    @GET
+    @Path("/stop-listener")
+    public String stopListener() {
+        messageListenerManager.stop();
+        return "Listener stopped";
     }
 
     @GET
