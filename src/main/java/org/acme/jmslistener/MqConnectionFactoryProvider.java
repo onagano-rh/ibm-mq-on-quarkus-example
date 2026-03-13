@@ -47,6 +47,10 @@ public class MqConnectionFactoryProvider {
             factory.setBooleanProperty(WMQConstants.USER_AUTHENTICATION_MQCSP, true);
         }
 
+        // MQサーバー再起動時のための再接続の設定
+        factory.setIntProperty(WMQConstants.WMQ_CLIENT_RECONNECT_OPTIONS, WMQConstants.WMQ_CLIENT_RECONNECT_Q_MGR);
+        factory.setIntProperty(WMQConstants.WMQ_CLIENT_RECONNECT_TIMEOUT, 300);
+
         return factory;
     }
 }
