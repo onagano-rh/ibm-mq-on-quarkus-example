@@ -15,13 +15,14 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
 import jakarta.jms.Connection;
 import jakarta.jms.ConnectionFactory;
+import jakarta.jms.ExceptionListener;
 import jakarta.jms.JMSException;
 import jakarta.jms.MessageConsumer;
 import jakarta.jms.Queue;
 import jakarta.jms.Session;
 
 @ApplicationScoped
-public class MessageListenerManager {
+public class MessageListenerManager implements ExceptionListener {
 
     private static final Logger LOGGER = Logger.getLogger(MessageListenerManager.class);
 
@@ -47,6 +48,7 @@ public class MessageListenerManager {
     void onStart(@Observes StartupEvent ev) {
         try {
             connection = connectionFactory.createConnection();
+            connection.setExceptionListener(this);
             connection.start();
             start();
             LOGGER.infof("Message listener started");
@@ -63,8 +65,16 @@ public class MessageListenerManager {
             }
             LOGGER.infof("Message listener stopped");
         } catch (JMSException e) {
-            LOGGER.errorf("Error stopping message listener: %s", e.getMessage(), e);
+            LOGGER.errorf(e, "Error stopping message listener: %s", e.getMessage());
         }
+    }
+
+    @Override
+    public void onException(JMSException e) {
+            LOGGER.errorf(e, "Error happened on connection: %s", e.getMessage());
+            // Do what you want
+            //stop();
+            //start();
     }
 
     public synchronized void start() {

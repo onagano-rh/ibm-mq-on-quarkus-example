@@ -18,7 +18,7 @@ public class MyMessageListener implements MessageListener {
             //Thread.sleep(5000L);
             LOGGER.infof("Message: %s", message.getBody(String.class));
         } catch (Exception e) {
-            LOGGER.errorf("Error onMessage: %s", e.getMessage());
+            LOGGER.errorf(e, "Error onMessage: %s", e.getMessage());
         }
     }
 }
